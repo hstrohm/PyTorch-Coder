@@ -18,8 +18,8 @@
 import ast
 import collections
 
-import tensorflow as tf
-from tf_coder import filter_group
+import torch      #tensorflow -> pytorch
+from pytorch_coder import filter_group
 
 
 FilterGroup = filter_group.FilterGroup
@@ -55,10 +55,10 @@ INPUT_VARIABLE_WEIGHT = 8
 
 # DTypes with weights to add to the pool of constants.
 CONSTANT_DTYPES_AND_WEIGHTS = collections.OrderedDict([
-    (tf.int32, 8),
-    (tf.float32, 8),
-    (tf.bool, 8),
-    (tf.int64, 16),
+    (torch.int32, 8),
+    (torch.float32, 8),
+    (torch.bool, 8),
+    (torch.int64, 16),
 ])
 
 # Used in value search for custom cast logic.
@@ -79,45 +79,41 @@ CONSTANT_OPERATION_NAME = 'tf.constant(value)'
 # FunctionInfo name format: "tf.module.function(arg_1, arg_2, arg_3='value')"
 # means call the function `tf.module.function` with varying inputs `arg_1` and
 # `arg_2`, where `arg_3` is fixed and set to the literal constant `'value'`.
-TF_FUNCTIONS = [
-    FunctionInfo(name='tf.abs(x)',
+PY_FUNCTIONS = [
+    FunctionInfo(name='torch.abs(input)',
                  filter_group=FilterGroup.PRIMITIVE_OR_TENSOR_1,
                  weight=40),
-    FunctionInfo(name='tf.add(x, y)',
+    FunctionInfo(name='torch.add(input, other)',
                  filter_group=FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2,
                  weight=28),
-    FunctionInfo(name='tf.add_n(inputs)',
-                 filter_group=FilterGroup.SEQUENCE_1,
-                 weight=44),
-    FunctionInfo(name='tf.argmax(input, axis)',
+    #FunctionInfo(name='tf.add_n(inputs)',            #couldn't find equivalent
+    #             filter_group=FilterGroup.SEQUENCE_1,
+    #             weight=44),
+    FunctionInfo(name='torch.argmax(input, dim)', #(input, dim, keepdim=False)
                  filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
                  weight=32),
-    FunctionInfo(name='tf.argmin(input, axis)',
+    FunctionInfo(name='torch.argmin(input, dim)', #(input, dim=None, keepdim=False)
                  filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
                  weight=48),
-    FunctionInfo(name='tf.argsort(values, axis, stable=True)',
+    FunctionInfo(name='torch.argsort(input, dim=-1, descending=False)',
                  filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
                  weight=40),
-    FunctionInfo(name=("tf.argsort(values, axis, direction='DESCENDING', "
-                       "stable=True)"),
+    FunctionInfo(name=("torch.argsort(input)"),
                  filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
                  weight=48),
-    FunctionInfo(name='tf.boolean_mask(tensor, mask)',
+    FunctionInfo(name='torch.masked_fill(mask, value)',
                  filter_group=FilterGroup.TENSOR_BOOLTENSOR_2,
                  weight=28),
-    FunctionInfo(name='tf.broadcast_to(input, shape)',
-                 # TODO(kshi): BROADCAST_TO_2 is a workaround for b/124261199.
-                 # Once that is fixed, the TENSOR_SHAPE filter_group would be
-                 # simpler but might be slower (need to measure).
+    FunctionInfo(name='torch.broadcast_to(input, shape)',
                  filter_group=FilterGroup.BROADCAST_TO_2,
                  weight=44),
-    FunctionInfo(name=CAST_OPERATION_NAME,  # 'tf.cast(x, dtype)'.
+    FunctionInfo(name='torch.type(dtype)', #CAST_OPERATION_NAME,  # 'tf.cast(x, dtype)'.
                  filter_group=FilterGroup.CASTABLE_DTYPE_2,
                  weight=16),
-    FunctionInfo(name='tf.clip_by_value(t, clip_value_min, clip_value_max)',
+    FunctionInfo(name='torch.clamp(input, min, max)',
                  filter_group=FilterGroup.CLIP_BY_VALUE_3,
                  weight=44),
-    FunctionInfo(name='tf.concat(values, axis)',
+    FunctionInfo(name='torch.cat(tensors, dim)',
                  filter_group=FilterGroup.TENSORSEQUENCE_AXIS_2,
                  weight=36),
     FunctionInfo(name=CONSTANT_OPERATION_NAME,  # 'tf.constant(value)'.
