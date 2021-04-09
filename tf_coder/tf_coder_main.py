@@ -26,7 +26,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Must happen before importing tf.
 
 from absl import app  # pylint: disable=g-import-not-at-top
 import numpy as np  # pylint: disable=unused-import
-import tensorflow as tf  # pylint: disable=unused-import
+#import tensorflow as tf  # pylint: disable=unused-import
+import torch
 
 from tf_coder.value_search import colab_interface
 from tf_coder.value_search import value_search_settings as settings_module
