@@ -33,7 +33,7 @@ class AllOperationsTest(parameterized.TestCase):
 
   def test_get_tf_operations(self):
     operations = all_operations.get_tf_operations()
-    self.assertLen(operations, len(tf_functions.TF_FUNCTIONS))
+    self.assertLen(operations, len(tf_functions.PY_FUNCTIONS))
     self.assertTrue(any(operation.name == 'tf.add(x, y)'
                         for operation in operations))
     self.assertFalse(any(operation.name == 'tf.sparse.add(a, b)'
@@ -54,10 +54,10 @@ class AllOperationsTest(parameterized.TestCase):
 
   @parameterized.named_parameters(
       ('with_sparse', True,
-       len(tf_functions.TF_FUNCTIONS) + len(tf_functions.SPARSE_FUNCTIONS) +
+       len(tf_functions.PY_FUNCTIONS) + len(tf_functions.SPARSE_FUNCTIONS) +
        len(all_operations.get_python_operations())),
       ('without_sparse', False,
-       len(tf_functions.TF_FUNCTIONS) +
+       len(tf_functions.PY_FUNCTIONS) +
        len(all_operations.get_python_operations())))
   def test_get_operations_correct_cardinality(
       self, include_sparse_operations, expected_cardinality):

@@ -62,7 +62,7 @@ CONSTANT_DTYPES_AND_WEIGHTS = collections.OrderedDict([
 ])
 
 # Used in value search for custom cast logic.
-CAST_OPERATION_NAME = 'torch.type(dtype)'
+CAST_OPERATION_NAME = 'torch.Tensor.type(dtype)'
 
 # Used in value search to convert primitive inputs (e.g., 3) into scalar tensors
 # (e.g., tf.constant(3)).

@@ -18,9 +18,10 @@
 from absl.testing import absltest
 from absl.testing import parameterized
 import funcsigs
-from tf_coder import filter_group
-from tf_coder import tf_coder_utils
-from tf_coder import tf_functions
+import filter_group
+import tf_coder_utils
+import tf_functions
+import torch
 
 # FunctionInfo names should match this.
 FUNCTION_INFO_NAME_REGEX = r'\w+(\.\w+)*\(\w+(, \w+(=[^,=()]+)?)*\)'
@@ -29,7 +30,7 @@ FUNCTION_INFO_NAME_REGEX = r'\w+(\.\w+)*\(\w+(, \w+(=[^,=()]+)?)*\)'
 class TfFunctionsTest(parameterized.TestCase):
 
   def _check_function(self, function_name, usable_args, constant_kwargs):
-    """Checks for errors in one entry of tf_functions.TF_FUNCTIONS."""
+    """Checks for errors in one entry of tf_functions.PY_FUNCTIONS."""
     try:
       func_obj = tf_coder_utils.get_tf_function(function_name)
     except ValueError:
@@ -112,7 +113,7 @@ class TfFunctionsTest(parameterized.TestCase):
     self.assertNotRegex(bad_name, FUNCTION_INFO_NAME_REGEX)
 
   @parameterized.named_parameters(
-      ('tf_functions', tf_functions.TF_FUNCTIONS),
+      ('tf_functions', tf_functions.PY_FUNCTIONS),
       ('sparse_functions', tf_functions.SPARSE_FUNCTIONS))
   def test_function_lists(self, function_list):
     for function_info in function_list:

@@ -21,33 +21,33 @@ import operator
 from typing import List
 
 import numpy as np
-import tensorflow as tf
-from tf_coder import tensor_limits as limits
+import torch #import tensorflow as tf
+#from torch import tensor_limits as limits
 
 
 # Types of primitive objects.
 PRIMITIVE_TYPES = (int, float, bool, str)
 
 # Int tf.DType objects for different sizes.
-UINT_DTYPES = (tf.uint32, tf.uint64, tf.uint16, tf.uint8)
-INT_DTYPES = (tf.int32, tf.int64, tf.int16, tf.int8) + UINT_DTYPES
+UINT_DTYPES = (torch.uint32, torch.uint64, torch.uint16, torch.uint8)
+INT_DTYPES = (torch.int32, torch.int64, torch.int16, torch.int8) + UINT_DTYPES
 
 # Float tf.DType objects for different sizes.
-FLOAT_DTYPES = (tf.float32, tf.float64, tf.float16)
+FLOAT_DTYPES = (torch.float32, torch.float64, torch.float16)
 
 # The prefix for the name of a TensorFlow function.
-TF_PREFIX = 'tf.'
+PY_PREFIX = 'torch.'
 
 # Maps integral dtypes to their min and max values.
 INT_DTYPE_MIN_MAX = {
-    tf.int8: (-2**7, 2**7 - 1),
-    tf.uint8: (0, 2**8 - 1),
-    tf.int16: (-2**15, 2**15 - 1),
-    tf.uint16: (0, 2**16 - 1),
-    tf.int32: (-2**31, 2**31 - 1),
-    tf.uint32: (0, 2**32 - 1),
-    tf.int64: (-2**63, 2**63 - 1),
-    tf.uint64: (0, 2**64 - 1),
+    torch.int8: (-2**7, 2**7 - 1),
+    torch.uint8: (0, 2**8 - 1),
+    torch.int16: (-2**15, 2**15 - 1),
+    torch.uint16: (0, 2**16 - 1),
+    torch.int32: (-2**31, 2**31 - 1),
+    torch.uint32: (0, 2**32 - 1),
+    torch.int64: (-2**63, 2**63 - 1),
+    torch.uint64: (0, 2**64 - 1),
 }
 
 
@@ -65,12 +65,12 @@ def get_tf_function(function_name):
     ValueError: If the function name does not start with "tf.", or the function
       could not be found.
   """
-  if not function_name.startswith(TF_PREFIX):
+  if not function_name.startswith(PY_PREFIX):
     raise ValueError('get_tf_function() called with function {}, which does '
                      'not start with "tf.".'.format(function_name))
-  function_name_without_prefix = function_name[len(TF_PREFIX):]
+  function_name_without_prefix = function_name[len(PY_PREFIX):]
   try:
-    tf_function = operator.attrgetter(function_name_without_prefix)(tf)
+    tf_function = operator.attrgetter(function_name_without_prefix)(torch)
     if tf_function is None:
       raise ValueError('Could not find TF function {}'.format(function_name))
     return tf_function
@@ -88,26 +88,26 @@ def convert_to_tensor(tensor_like):
   Returns:
     A tf.Tensor.
   """
-  if isinstance(tensor_like, tf.Tensor):
+  if isinstance(tensor_like, torch.Tensor):
     return tensor_like
-  if isinstance(tensor_like, tf.SparseTensor):
-    return tf.sparse.reorder(tensor_like)
-  return tf.constant(tensor_like)
+  #if isinstance(tensor_like, torch.SparseTensor):
+  #  return torch.sparse.reorder(tensor_like)
+  return torch.tensor(tensor_like)
 
 
 def num_tensor_elements(tensor):
   """Returns the number of elements in a tensor as an int (primitive)."""
-  return int(tf.size(tensor))
+  return int(torch.Size(tensor))
 
 
 def max_tensor_value(tensor):
   """Returns the maximum value in a tensor, as a float (primitive)."""
-  return float(tf.reduce_max(tf.cast(tensor, tf.float32)))
+  return float(tensor.max(tensor.Tensor.type(torch.float32)))
 
 
 def min_tensor_value(tensor):
   """Returns the minimum value in a tensor, as a float (primitive)."""
-  return float(tf.reduce_min(tf.cast(tensor, tf.float32)))
+  return float(tensor.min(tensor.Tensor.type(torch.float32)))
 
 
 def tensor_to_string(tensor, decimals=limits.NUM_DECIMALS):
@@ -153,16 +153,16 @@ def object_to_string(obj, decimals=limits.NUM_DECIMALS):
     ValueError: If `obj` has an unsupported type.
   """
   # Tensors.
-  if isinstance(obj, tf.Tensor):
+  if isinstance(obj, torch.Tensor):
     return tensor_to_string(obj)
-  if isinstance(obj, tf.SparseTensor):
+  #if isinstance(obj, torch.SparseTensor):
     # TODO(kshi): Round float SparseTensors according to `decimals`.
-    return str(obj)
+    #return str(obj)
 
   obj_type = type(obj)
 
   # Primitives and TensorFlow dtypes are handled the same way (with repr()).
-  if obj_type in (int, float, bool, str, tf.DType):
+  if obj_type in (int, float, bool, str, torch.DType):
     if obj_type == float:
       # Floats must be rounded.
       obj = round(obj, decimals)

@@ -39,7 +39,7 @@ class FilterGroup(enum.Enum):
   # The argument is a shape.
   SHAPE_1 = 'SHAPE_1'
   # The argument is a sequence.
-  SEQUENCE_1 = 'SEQUENCE_1'
+  #SEQUENCE_1 = 'SEQUENCE_1'
   # The argument is a tensor.
   TENSOR_1 = 'TENSOR_1'
   # The argument is a float tensor.
@@ -49,9 +49,9 @@ class FilterGroup(enum.Enum):
   # The argument is a SparseTensor.
   SPARSE_1 = 'SPARSE_1'
   # The argument is not a tensor.
-  NOT_TENSOR_1 = 'NOT_TENSOR_1'
+  #NOT_TENSOR_1 = 'NOT_TENSOR_1'
   # The argument is a 1-D tensor.
-  TENSOR_1D_1 = 'TENSOR_1D_1'
+  #TENSOR_1D_1 = 'TENSOR_1D_1'
   # The argument is a primitive or tensor.
   PRIMITIVE_OR_TENSOR_1 = 'PRIMITIVE_OR_TENSOR_1'
 
