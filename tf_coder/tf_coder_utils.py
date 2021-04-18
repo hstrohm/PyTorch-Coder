@@ -29,8 +29,8 @@ import torch #import tensorflow as tf
 PRIMITIVE_TYPES = (int, float, bool, str)
 
 # Int tf.DType objects for different sizes.
-UINT_DTYPES = (torch.uint32, torch.uint64, torch.uint16, torch.uint8)
-INT_DTYPES = (torch.int32, torch.int64, torch.int16, torch.int8) + UINT_DTYPES
+#UINT_DTYPES = (torch.uint32, torch.uint64, torch.uint16, torch.uint8)
+INT_DTYPES = (torch.int32, torch.int64, torch.int16, torch.int8) #+ UINT_DTYPES
 
 # Float tf.DType objects for different sizes.
 FLOAT_DTYPES = (torch.float32, torch.float64, torch.float16)
@@ -43,11 +43,8 @@ INT_DTYPE_MIN_MAX = {
     torch.int8: (-2**7, 2**7 - 1),
     torch.uint8: (0, 2**8 - 1),
     torch.int16: (-2**15, 2**15 - 1),
-    torch.uint16: (0, 2**16 - 1),
     torch.int32: (-2**31, 2**31 - 1),
-    torch.uint32: (0, 2**32 - 1),
     torch.int64: (-2**63, 2**63 - 1),
-    torch.uint64: (0, 2**64 - 1),
 }
 
 
@@ -110,7 +107,7 @@ def min_tensor_value(tensor):
   return float(tensor.min(tensor.Tensor.type(torch.float32)))
 
 
-def tensor_to_string(tensor, decimals=limits.NUM_DECIMALS):
+def tensor_to_string(tensor, decimals=5): #limits.NUM_DECIMALS
   """Converts a tensor into a string representation used for equality tests.
 
   TF-Coder considers two tensors to be equal if and only if their string
@@ -131,7 +128,7 @@ def tensor_to_string(tensor, decimals=limits.NUM_DECIMALS):
   return repr(tensor.dtype) + ':' + str(np_array.tolist())
 
 
-def object_to_string(obj, decimals=limits.NUM_DECIMALS):
+def object_to_string(obj, decimals=5): #limits.NUM_DECIMALS
   """Converts an object into a string representation used for equality tests.
 
   TF-Coder considers two objects to be equal if and only if their string

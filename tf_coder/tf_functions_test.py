@@ -18,9 +18,9 @@
 from absl.testing import absltest
 from absl.testing import parameterized
 import funcsigs
-import filter_group
-import tf_coder_utils
-import tf_functions
+from tf_coder import filter_group
+from tf_coder import tf_coder_utils
+from tf_coder import tf_functions
 import torch
 
 # FunctionInfo names should match this.
@@ -113,8 +113,8 @@ class TfFunctionsTest(parameterized.TestCase):
     self.assertNotRegex(bad_name, FUNCTION_INFO_NAME_REGEX)
 
   @parameterized.named_parameters(
-      ('tf_functions', tf_functions.PY_FUNCTIONS),
-      ('sparse_functions', tf_functions.SPARSE_FUNCTIONS))
+      ('tf_functions', tf_functions.PY_FUNCTIONS))#,
+     # ('sparse_functions', tf_functions.SPARSE_FUNCTIONS))
   def test_function_lists(self, function_list):
     for function_info in function_list:
       self.assertRegex(function_info.name, FUNCTION_INFO_NAME_REGEX)
