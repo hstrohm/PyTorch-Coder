@@ -36,7 +36,7 @@ def get_python_operations() -> List[operation_base.Operation]:
 def get_tf_operations() -> List[operation_base.Operation]:
   """Returns a list of Operation objects for dense TensorFlow operations."""
   return [function_operation.FunctionOperation(function_info)
-          for function_info in tf_functions.TF_FUNCTIONS]
+          for function_info in tf_functions.PY_FUNCTIONS]
 
 
 def get_sparse_operations() -> List[operation_base.Operation]:
