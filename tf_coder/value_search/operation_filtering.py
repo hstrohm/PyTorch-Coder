@@ -348,20 +348,16 @@ def add_filters_to_function_operation(function_operation):
 
   elif group == filter_group.FilterGroup.SHAPE_1:
     function_operation.add_value_filters([SHAPE_FILTER])
-  elif group == filter_group.FilterGroup.SEQUENCE_1:
-    function_operation.add_value_filters([SEQUENCE_FILTER])
+  #elif group == filter_group.FilterGroup.SEQUENCE_1:
+   # function_operation.add_value_filters([SEQUENCE_FILTER])
   elif group == filter_group.FilterGroup.TENSOR_1:
     function_operation.add_value_filters([TENSOR_FILTER])
   elif group == filter_group.FilterGroup.FLOATTENSOR_1:
     function_operation.add_value_filters([FLOAT_TENSOR_FILTER])
-  elif group == filter_group.FilterGroup.NUMERICTENSOR_1:
-    function_operation.add_value_filters([NUMERIC_TENSOR_FILTER])
   elif group == filter_group.FilterGroup.SPARSE_1:
     function_operation.add_value_filters([SPARSE_FILTER])
   elif group == filter_group.FilterGroup.NOT_TENSOR_1:
     function_operation.add_value_filters([NOT_TENSOR_FILTER])
-  elif group == filter_group.FilterGroup.TENSOR_1D_1:
-    function_operation.add_value_filters([TENSOR_1D_FILTER])
   elif group == filter_group.FilterGroup.PRIMITIVE_OR_TENSOR_1:
     function_operation.add_value_filters([PRIMITIVE_OR_TENSOR_FILTER])
 
@@ -379,100 +375,26 @@ def add_filters_to_function_operation(function_operation):
     function_operation.add_value_filters([get_dtype_filter(tf.bool),
                                           AXIS_FILTER])
     function_operation.set_apply_filter(TENSOR_AXIS_IN_RANGE_APPLY_FILTER)
-  elif group == filter_group.FilterGroup.NUMERICTENSOR_AXIS_2:
-    function_operation.add_value_filters([NUMERIC_TENSOR_FILTER, AXIS_FILTER])
-    function_operation.set_apply_filter(TENSOR_AXIS_IN_RANGE_APPLY_FILTER)
   elif group == filter_group.FilterGroup.TENSORSEQUENCE_AXIS_2:
     function_operation.add_value_filters([TENSOR_SEQUENCE_FILTER,
                                           AXIS_FILTER])
   elif group == filter_group.FilterGroup.TENSOR_SHAPE_2:
     function_operation.add_value_filters([TENSOR_FILTER, SHAPE_FILTER])
-  elif group == filter_group.FilterGroup.SHAPE_PRIMITIVE_2:
-    function_operation.add_value_filters([SHAPE_FILTER, PRIMITIVE_FILTER])
-  elif group == filter_group.FilterGroup.TENSOR_BOOLTENSOR_2:
-    function_operation.add_value_filters([TENSOR_FILTER,
-                                          get_dtype_filter(tf.bool)])
-  elif group == filter_group.FilterGroup.CASTABLE_DTYPE_2:
-    function_operation.add_value_filters([None, DTYPE_FILTER])
-    function_operation.set_apply_filter(
-        lambda arg_values: is_castable(arg_values[0], arg_values[1]))
+  #elif group == filter_group.FilterGroup.SHAPE_PRIMITIVE_2:
+   # function_operation.add_value_filters([SHAPE_FILTER, PRIMITIVE_FILTER])
   elif group == filter_group.FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2:
     function_operation.add_value_filters([NUMERIC_TENSOR_FILTER] * 2)
     function_operation.set_apply_filter(SAME_DTYPES_BROADCASTABLE_APPLY_FILTER)
-  elif group == filter_group.FilterGroup.SAME_DTYPE_FLOAT_BROADCASTABLE_2:
-    function_operation.add_value_filters([FLOAT_TENSOR_FILTER] * 2)
-    function_operation.set_apply_filter(SAME_DTYPES_BROADCASTABLE_APPLY_FILTER)
-  elif group == filter_group.FilterGroup.SAME_SHAPE_ONE_SPARSE_2:
-    def _same_shape_one_sparse_filter(arg_values):
-      arg1, arg2 = arg_values
-      return ((arg1.is_sparse_tensor or arg2.is_sparse_tensor) and
-              SAME_SHAPES_APPLY_FILTER(arg_values))
-    function_operation.add_value_filters([TENSOR_OR_SPARSE_FILTER] * 2)
-    function_operation.set_apply_filter(_same_shape_one_sparse_filter)
-  elif group == filter_group.FilterGroup.SAME_SHAPE_BOTH_SPARSE_2:
-    function_operation.add_value_filters([SPARSE_FILTER] * 2)
-    function_operation.set_apply_filter(SAME_SHAPES_APPLY_FILTER)
-  elif group == filter_group.FilterGroup.AXIS_SPARSESEQUENCE_2:
-    function_operation.add_value_filters([AXIS_FILTER, SPARSE_SEQUENCE_FILTER])
-  elif group == filter_group.FilterGroup.SPARSE_AXIS_2:
-    function_operation.add_value_filters([SPARSE_FILTER, AXIS_FILTER])
+  elif group == filter_group.FilterGroup.NUMERICTENSOR_AXIS_2:
+    function_operation.add_value_filters([NUMERIC_TENSOR_FILTER, AXIS_FILTER])
     function_operation.set_apply_filter(TENSOR_AXIS_IN_RANGE_APPLY_FILTER)
-  elif group == filter_group.FilterGroup.SPARSE_SHAPE_2:
-    function_operation.add_value_filters([SPARSE_FILTER, SHAPE_FILTER])
-  elif group == filter_group.FilterGroup.SPARSE_PRIMITIVE_2:
-    function_operation.add_value_filters([SPARSE_FILTER, PRIMITIVE_FILTER])
-  elif group == filter_group.FilterGroup.SEGMENT_OPERATION_2:
-    def _segment_ids_filter(arg_value):
-      """Segment IDs must be a nonnegative nondecreasing 1D int tensor."""
-      if not (arg_value.is_tensor and
-              arg_value.has_int_dtype() and
-              len(arg_value.shape) == 1 and
-              arg_value.max() < limits.MAX_DIMENSION_LENGTH and
-              arg_value.shape[0] > 0):
-        return False
-      elements = arg_value.numpy_tolist()
-      return (0 <= elements[0] and
-              all(x <= y for x, y in zip(elements, elements[1:])))
-    function_operation.add_value_filters([NONSCALAR_NUMERIC_TENSOR_FILTER,
-                                          _segment_ids_filter])
-    def _segment_ids_right_length(arg_values):
-      data, segment_ids = arg_values
-      return (data.shape[0] == segment_ids.shape[0] and
-              data.num_elements() / data.shape[0] * segment_ids.max()
-              <= limits.MAX_TENSOR_ELEMENTS)
-    function_operation.set_apply_filter(_segment_ids_right_length)
-
-  elif group == filter_group.FilterGroup.SPARSE_INT_AXIS_3:
-    function_operation.add_value_filters([SPARSE_FILTER,
-                                          get_type_filter(int),
-                                          AXIS_FILTER])
-  elif group == filter_group.FilterGroup.SPARSE_AXIS_BOOL_3:
-    function_operation.add_value_filters([SPARSE_FILTER,
-                                          AXIS_FILTER,
-                                          get_type_filter(bool)])
-  elif group == filter_group.FilterGroup.UNSORTED_SEGMENT_OPERATION_3:
-    def _segment_ids_filter(arg_value):
-      """Must be a nonnegative nonscalar int tensor."""
-      return (arg_value.is_tensor and
-              arg_value.shape and arg_value.shape[0] and
-              arg_value.has_int_dtype() and
-              arg_value.min() >= 0 and
-              arg_value.max() < limits.MAX_DIMENSION_LENGTH)
-    function_operation.add_value_filters([NONSCALAR_NUMERIC_TENSOR_FILTER,
-                                          _segment_ids_filter,
-                                          INT_LENGTH_FILTER])
-    def _unsorted_segment_apply_filter(arg_values):
-      """Shapes must be compatible, num_segments must be large enough."""
-      data, segment_ids, num_segments = arg_values
-      return (data.shape[:len(segment_ids.shape)] == segment_ids.shape and
-              segment_ids.max() < int(num_segments.value) and
-              # Upper bound on the resulting tensor size.
-              data.num_elements() * int(num_segments.value)
-              <= limits.MAX_TENSOR_ELEMENTS)
-    function_operation.set_apply_filter(_unsorted_segment_apply_filter)
-
-  # Operations with other special handling.
-
+  elif group == filter_group.FilterGroup.CASTABLE_DTYPE_2:
+    function_operation.add_value_filters([DTYPE_FILTER])
+    function_operation.set_apply_filter(
+        lambda arg_values: is_castable(arg_values[0], arg_values[1]))
+  elif group == filter_group.FilterGroup.NUMERICTENSOR_AXIS_3:
+    function_operation.add_value_filters([NUMERIC_TENSOR_FILTER])
+    function_operation.set_apply_filter(TENSOR_AXIS_IN_RANGE_APPLY_FILTER)
   elif group == filter_group.FilterGroup.BINCOUNT_1:
     def _bincount_filter(arg_value):
       """The value must contain nonnegative ints with a small maximum."""
@@ -488,12 +410,11 @@ def add_filters_to_function_operation(function_operation):
 
   elif group == filter_group.FilterGroup.EYE_1:
     function_operation.add_value_filters([SQUARE_MATRIX_SIZE_FILTER])
-
+  elif group == filter_group.FilterGroup.NUMERICTENSOR_1:
+    function_operation.add_value_filters([NUMERIC_TENSOR_FILTER])
   elif group == filter_group.FilterGroup.RANGE_1:
     function_operation.add_value_filters([VECTOR_LENGTH_FILTER])
 
-  elif group == filter_group.FilterGroup.SEQUENCE_MASK_1:
-    function_operation.add_value_filters([SEQUENCE_MASK_LENGTHS_FILTER])
 
   elif group == filter_group.FilterGroup.SQUEEZE_1:
     def _squeezable_filter(arg_value):
@@ -534,7 +455,7 @@ def add_filters_to_function_operation(function_operation):
                                           DTYPE_FILTER])
 
   elif group == filter_group.FilterGroup.GATHER_2:
-    function_operation.add_value_filters([NON_SCALAR_TENSOR_FILTER,
+    function_operation.add_value_filters([NON_SCALAR_TENSOR_FILTER, AXIS_FILTER,
                                           INDICES_FILTER])
     def _indices_in_range(arg_values):
       params, indices = arg_values
@@ -543,20 +464,7 @@ def add_filters_to_function_operation(function_operation):
                <= limits.MAX_TENSOR_ELEMENTS))
     function_operation.set_apply_filter(_indices_in_range)
 
-  elif group == filter_group.FilterGroup.GATHER_ND_2:
-    function_operation.add_value_filters([NON_SCALAR_TENSOR_FILTER,
-                                          INDICES_FILTER])
-    def _gather_nd_2_apply_filter(arg_values):
-      params, indices = arg_values
-      indices_shape = (indices.shape if indices.is_tensor else
-                       indices.sequence_shape)
-      return (indices_shape and indices_shape[-1] <= len(params.shape) and
-              indices.max() < max(params.shape) and
-              # Upper bound on resulting tensor size.
-              indices.num_elements() * params.num_elements()
-              <= limits.MAX_TENSOR_ELEMENTS)
-    function_operation.set_apply_filter(_gather_nd_2_apply_filter)
-
+  
   elif group == filter_group.FilterGroup.MATMUL_2:
     def _numeric_min_rank_2_filter(arg_value):
       """Must be an int or float tensor of rank >= 2."""
@@ -614,15 +522,6 @@ def add_filters_to_function_operation(function_operation):
               sorted_sequence.shape[:-1] == values.shape[:-1])
     function_operation.set_apply_filter(_searchsorted_apply_filter)
 
-  elif group == filter_group.FilterGroup.SEQUENCE_MASK_2:
-    function_operation.add_value_filters([SEQUENCE_MASK_LENGTHS_FILTER,
-                                          INT_LENGTH_FILTER])
-    def _sequence_mask_apply_filter(arg_values):
-      """Checks that the result will have a small number of elements."""
-      lengths, maxlen = arg_values
-      return (lengths.num_elements() * int(maxlen.value)
-              <= limits.MAX_TENSOR_ELEMENTS)
-    function_operation.set_apply_filter(_sequence_mask_apply_filter)
 
   elif group == filter_group.FilterGroup.TILE_2:
     def _tile_apply_filter(arg_values):
@@ -650,62 +549,6 @@ def add_filters_to_function_operation(function_operation):
       return int(k.value) < tensor.shape[-1]
     function_operation.set_apply_filter(_top_k_apply_filter)
 
-  elif group == filter_group.FilterGroup.TRANSPOSE_2:
-    def _transpose_apply_filter(arg_values):
-      """Checks that perm has length equal to the number of a's dimensions."""
-      a, perm = arg_values
-      perm_len = perm.shape[0] if perm.is_tensor else len(perm.value)
-      return perm_len == len(a.shape)
-    function_operation.add_value_filters([TENSOR_FILTER,
-                                          CONTAINS_INTS_1D_FILTER])
-    function_operation.set_apply_filter(_transpose_apply_filter)
-
-  elif group == filter_group.FilterGroup.SPARSE_RETAIN_2:
-    def _boolean_sequence_filter(arg_value):
-      """Only keeps 1D boolean tensors, or boolean sequences."""
-      if arg_value.is_tensor:
-        return len(arg_value.shape) == 1 and arg_value.dtype == tf.bool
-      return arg_value.elem_type == bool
-    def _sparse_retain_apply_filter(arg_values):
-      """Checks that to_retain is valid."""
-      sp_input, to_retain = arg_values
-      length = (
-          to_retain.shape[0] if to_retain.is_tensor else len(to_retain.value))
-      if to_retain.is_tensor:
-        length = to_retain.shape[0]
-      else:  # Must be a boolean sequence.
-        length = len(to_retain.value)
-      return length == int(sp_input.value.indices.shape[0])
-    function_operation.add_value_filters([SPARSE_FILTER,
-                                          _boolean_sequence_filter])
-    function_operation.set_apply_filter(_sparse_retain_apply_filter)
-
-  elif group == filter_group.FilterGroup.SPARSE_TO_INDICATOR_2:
-    def _sparse_to_indicator_apply_filter(arg_values):
-      """Checks that the result will be small."""
-      sp_input, vocab_size = arg_values
-      vocab_size_int = vocab_size.value
-      if not sp_input.shape:
-        return False
-      if (vocab_size_int > limits.MAX_DIMENSION_LENGTH or
-          vocab_size_int <= 0):
-        return False
-      output_size = vocab_size_int * functools.reduce(
-          operator.mul, sp_input.shape[:-1], 1)
-      return output_size <= limits.MAX_TENSOR_ELEMENTS
-    function_operation.add_value_filters([SPARSE_FILTER, get_type_filter(int)])
-    function_operation.set_apply_filter(_sparse_to_indicator_apply_filter)
-
-  elif group == filter_group.FilterGroup.SPARSE_TRANSPOSE_2:
-    def _sparse_transpose_apply_filter(arg_values):
-      """Checks that perm has length equal to the number of a's dimensions."""
-      a, perm = arg_values
-      perm_len = perm.shape[0] if perm.is_tensor else len(perm.value)
-      return perm_len == len(a.shape)
-    function_operation.add_value_filters([SPARSE_FILTER,
-                                          CONTAINS_INTS_1D_FILTER])
-    function_operation.set_apply_filter(_sparse_transpose_apply_filter)
-
   elif group == filter_group.FilterGroup.SQUEEZE_2:
     def _very_squeezable_filter(arg_value):
       """Keeps tensors with more than 1 squeezable dimension."""
@@ -728,27 +571,6 @@ def add_filters_to_function_operation(function_operation):
       _, min_clip, max_clip = arg_values
       return min_clip.value <= max_clip.value
     function_operation.set_apply_filter(_nondecreasing_clips)
-
-  elif group == filter_group.FilterGroup.GATHER_ND_3:
-    function_operation.add_value_filters([NON_SCALAR_TENSOR_FILTER,
-                                          INDICES_FILTER,
-                                          BATCH_DIMS_FILTER])
-    def _gather_nd_3_apply_filter(arg_values):
-      params, indices, batch_dims = arg_values
-      batch_dims_int = batch_dims.value
-      indices_shape = (indices.shape if indices.is_tensor else
-                       indices.sequence_shape)
-      return (
-          batch_dims_int < min(len(indices_shape), len(params.shape)) and
-          params.shape[:batch_dims_int] == indices_shape[:batch_dims_int] and
-          indices_shape and
-          indices_shape[-1] <= len(params.shape) - batch_dims_int and
-          indices.max() < max(params.shape) and
-          # Upper bound on resulting tensor size.
-          indices.num_elements() * params.num_elements()
-          <= limits.MAX_TENSOR_ELEMENTS)
-    function_operation.set_apply_filter(_gather_nd_3_apply_filter)
-
   elif group == filter_group.FilterGroup.PAD_3:
     function_operation.add_value_filters([TENSOR_FILTER,
                                           PADDINGS_FILTER,
@@ -794,75 +616,6 @@ def add_filters_to_function_operation(function_operation):
         return (len(axis.value) == len(shift.value) and
                 axis.max() < len(tensor.shape))
     function_operation.set_apply_filter(_roll_apply_filter)
-
-  elif group == filter_group.FilterGroup.SCATTER_ND_3:
-    function_operation.add_value_filters([SCATTER_INDICES_FILTER,
-                                          TENSOR_FILTER,
-                                          SHAPE_FILTER])
-    def _scatter_nd_apply_filter(arg_values):
-      indices, updates, shape = arg_values
-      index_depth = indices.shape[-1]
-      return (index_depth <= len(shape.value) and
-              indices.max() < shape.max() and
-              updates.shape == (indices.shape[:-1] +
-                                list(shape.value[index_depth:])))
-    function_operation.set_apply_filter(_scatter_nd_apply_filter)
-
-  elif group == filter_group.FilterGroup.SPARSE_SLICE_3:
-    def _contains_ints_1d_nonnegative_filter(arg_value):
-      return CONTAINS_INTS_1D_FILTER(arg_value) and arg_value.min() >= 0
-    def _sparse_slice_apply_filter(arg_values):
-      sp_input, start, size = arg_values
-      start_len = start.shape[0] if start.is_tensor else len(start.value)
-      size_len = size.shape[0] if size.is_tensor else len(size.value)
-      return (
-          start_len == size_len == len(sp_input.shape)
-          and all(int(start) < dim_length
-                  for start, dim_length in zip(start.value, sp_input.shape)))
-    function_operation.add_value_filters([SPARSE_FILTER,
-                                          CONTAINS_INTS_1D_FILTER,
-                                          _contains_ints_1d_nonnegative_filter])
-    function_operation.set_apply_filter(_sparse_slice_apply_filter)
-
-  elif group == filter_group.FilterGroup.SPARSETENSOR_3:
-    def _indices_filter(arg_value):
-      """Must be an int64 tensor with shape [num_values, num_dimensions]."""
-      return (arg_value.is_tensor and
-              arg_value.dtype == tf.int64 and
-              len(arg_value.shape) == 2 and
-              arg_value.shape[1] <= limits.MAX_NUM_DIMENSIONS)
-    def _dense_shape_filter(arg_value):
-      """A list of ints, or a 1D int64 tensor, representing a shape."""
-      if not (arg_value.elem_type is int or
-              (arg_value.is_tensor and arg_value.dtype == tf.int64 and
-               len(arg_value.shape) == 1)):
-        return False
-      return (0 < arg_value.num_elements() <= limits.MAX_NUM_DIMENSIONS and
-              arg_value.min() > 0 and
-              arg_value.max() <= limits.MAX_DIMENSION_LENGTH)
-    function_operation.add_value_filters([_indices_filter,
-                                          TENSOR_1D_FILTER,
-                                          _dense_shape_filter])
-    def _sparsetensor_apply_filter(arg_values):
-      """Shapes must be compatible."""
-      indices, values, dense_shape = arg_values
-      return (indices.shape[0] == values.shape[0] and
-              indices.shape[1] == len(dense_shape.value))
-    function_operation.set_apply_filter(_sparsetensor_apply_filter)
-
-  elif group == filter_group.FilterGroup.TENSOR_SCATTER_ND_UPDATE_3:
-    function_operation.add_value_filters([TENSOR_FILTER,
-                                          SCATTER_INDICES_FILTER,
-                                          TENSOR_FILTER])
-    def _tensor_scatter_nd_update_apply_filter(arg_values):
-      tensor, indices, updates = arg_values
-      index_depth = indices.shape[-1]
-      return (updates.dtype == tensor.dtype and
-              index_depth <= len(tensor.shape) and
-              indices.max() < max(tensor.shape) and
-              updates.shape == (list(indices.shape[:-1]) +
-                                tensor.shape[index_depth:]))
-    function_operation.set_apply_filter(_tensor_scatter_nd_update_apply_filter)
 
   elif group == filter_group.FilterGroup.TENSORDOT_3:
     def _tensordot_arg_3_filter(arg_value):
@@ -919,30 +672,6 @@ def add_filters_to_function_operation(function_operation):
                                           TENSOR_FILTER,
                                           TENSOR_FILTER])
     function_operation.set_apply_filter(_where_apply_filter)
-
-  elif group == filter_group.FilterGroup.GATHER_4:
-    function_operation.add_value_filters([NON_SCALAR_TENSOR_FILTER,
-                                          INDICES_FILTER,
-                                          AXIS_FILTER,
-                                          BATCH_DIMS_FILTER])
-    def _gather_4_apply_filter(arg_values):
-      """Checks many constraints mentioned in the tf.gather() documentation."""
-      params, indices, axis, batch_dims = arg_values
-      axis_int = axis.value
-      batch_dims_int = batch_dims.value
-      indices_shape = (indices.shape if indices.is_tensor else
-                       indices.sequence_shape)
-      return (
-          batch_dims_int < min(len(indices_shape), len(params.shape)) and
-          (axis_int < 0 or axis_int >= batch_dims_int) and
-          axis_int < len(params.shape) and
-          # Upper bound on the size of the result.
-          (params.num_elements() * indices.num_elements()
-           / params.shape[axis_int] <= limits.MAX_TENSOR_ELEMENTS) and
-          params.shape[:batch_dims_int] == indices_shape[:batch_dims_int] and
-          indices.max() < params.shape[axis_int])
-    function_operation.set_apply_filter(_gather_4_apply_filter)
-
   else:
     raise ValueError('Unknown filter group {} for FunctionOperation {}.'.format(
         group, function_operation.name))
