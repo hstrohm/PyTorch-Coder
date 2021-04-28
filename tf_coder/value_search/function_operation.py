@@ -47,12 +47,14 @@ class FunctionOperation(operation_base.Operation):
     function_name, arg_names, constant_kwargs = (
         tf_functions.parse_function_info_name(function_info))
     self._function_obj = tf_coder_utils.get_tf_function(function_name)
+    
     docstring = self._function_obj.__doc__
+    
     if not docstring:
       print('Warning: could not get docstring for function {}'.format(
           function_name))
       docstring = ''
-
+    print(arg_names)
     # Make sure the function and argument names appear in the docstring. (Args
     # should already appear in the docstring "Args" section though.)
     docstring += '\n' + function_info.name
@@ -76,11 +78,27 @@ class FunctionOperation(operation_base.Operation):
 
     self._has_default = {}
 
-    parameters = funcsigs.signature(self._function_obj).parameters
+    #parameters = funcsigs.signature(self._function_obj).parameters
     for arg_name in arg_names:
-      param = parameters[arg_name]
-      has_default = param.default is not param.empty
-      self._has_default[arg_name] = has_default
+        param = arg_name
+        found_args = False
+        found_keyword = False
+        for i, line in enumerate(self._function_obj.__doc__.split('\n')):
+            if 'Args:' in line:
+                found_args = True
+            if 'Keyword arguments:' in line:
+                found_keyword = True
+            if line == '':
+                found_args = False
+                found_keyword = False
+            if arg_name in line:
+                if found_args:
+                    has_default = False
+                    break
+                if found_keyword:
+                    has_default = True
+                    break
+        self._has_default[arg_name] = has_default
 
     operation_filtering.add_filters_to_function_operation(self)
 
