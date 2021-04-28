@@ -78,8 +78,7 @@ class ColabLoggingTest(absltest.TestCase):
         self.settings, include_in_dataset=True, problem_id=problem_id)
 
     results = colab_interface.run_value_search_from_colab(
-        self.inputs, self.output, self.constants, self.description,
-        self.settings)
+        self.inputs, self.output, self.constants, self.description, self.settings)
 
     colab_logging.log_result(
         results, include_in_dataset=True, problem_id=problem_id)
