@@ -177,7 +177,7 @@ class FilterGroup(enum.Enum):
   #SPARSE_TRANSPOSE_2 = 'SPARSE_TRANSPOSE_2'
   # The first argument is a tensor with more than 1 squeezable dimension, and
   # the second argument is an int specifying a squeezable dimension.
-  #SQUEEZE_2 = 'SQUEEZE_2'
+  SQUEEZE_2 = 'SQUEEZE_2'
 
   # The first argument must be an int or float tensor, and the second and third
   # arguments must both be nondecreasing primitives.
