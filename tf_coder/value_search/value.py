@@ -22,6 +22,7 @@ import itertools
 import operator
 import six
 
+import torch
 import tensorflow as tf
 from tf_coder import tf_coder_utils
 from tf_coder.value_search import value_search_utils
@@ -104,9 +105,9 @@ class Value(object):
     self.type = type(value)
 
     self.is_primitive = self.type in tf_coder_utils.PRIMITIVE_TYPES
-    self.is_dtype = isinstance(self.value, tf.DType)
+    self.is_dtype = isinstance(self.value, torch.dtype)
     self.is_sequence = isinstance(self.value, (list, tuple))
-    self.is_tensor = isinstance(value, tf.Tensor)
+    self.is_tensor = isinstance(value, torch.Tensor)
     self.is_sparse_tensor = isinstance(value, tf.SparseTensor)
 
     self.cached_info = {}
@@ -134,8 +135,8 @@ class Value(object):
       if not all(type(elem) is self.elem_type for elem in value):  # pylint: disable=unidiomatic-typecheck
         raise ValueError('Sequences must contain elements of the same type.')
 
-      self.elem_type_is_tensor = isinstance(value[0], tf.Tensor)
-      self.elem_type_is_sparse_tensor = isinstance(value[0], tf.SparseTensor)
+      self.elem_type_is_tensor = isinstance(value[0], torch.Tensor)
+      #self.elem_type_is_sparse_tensor = isinstance(value[0], torch.SparseTensor)
 
       # Sequences must contain tensors, SparseTensors, primitives, or other
       # sequences.
@@ -164,7 +165,7 @@ class Value(object):
     self.shape = None
     if self.is_tensor:
       self.dtype = value.dtype
-      self.shape = value.shape.as_list()
+      self.shape = list(value.shape)
       if self.num_elements() == 0:
         raise ValueError('Tensor is empty.')
       if not value_search_utils.check_tensor_size(self):
