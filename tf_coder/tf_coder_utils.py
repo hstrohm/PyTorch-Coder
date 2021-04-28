@@ -62,9 +62,9 @@ def get_tf_function(function_name):
     ValueError: If the function name does not start with "tf.", or the function
       could not be found.
   """
-  if not function_name.startswith(PY_PREFIX):
-    raise ValueError('get_tf_function() called with function {}, which does '
-                     'not start with "tf.".'.format(function_name))
+  #if not function_name.startswith(PY_PREFIX):
+    #raise ValueError('get_pytorch_function() called with function {}, which does '
+     #                'not start with "torch.".'.format(function_name))
   function_name_without_prefix = function_name[len(PY_PREFIX):]
   try:
     tf_function = operator.attrgetter(function_name_without_prefix)(torch)
@@ -94,7 +94,7 @@ def convert_to_tensor(tensor_like):
 
 def num_tensor_elements(tensor):
   """Returns the number of elements in a tensor as an int (primitive)."""
-  return int(torch.Size(tensor))
+  return int(torch.numel(tensor))
 
 
 def max_tensor_value(tensor):
