@@ -49,12 +49,12 @@ class FilterGroup(enum.Enum):
   # The argument is a SparseTensor.
   SPARSE_1 = 'SPARSE_1'
   # The argument is not a tensor.
-  #NOT_TENSOR_1 = 'NOT_TENSOR_1'
+  NOT_TENSOR_1 = 'NOT_TENSOR_1'
   # The argument is a 1-D tensor.
   #TENSOR_1D_1 = 'TENSOR_1D_1'
   # The argument is a primitive or tensor.
   PRIMITIVE_OR_TENSOR_1 = 'PRIMITIVE_OR_TENSOR_1'
-
+  NUMERICTENSOR_AXIS_3 = 'NUMERICTENSOR_AXIS_3' # hi
   ################################
   # Operations with 2 arguments.
 

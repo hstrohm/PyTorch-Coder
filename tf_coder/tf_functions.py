@@ -66,7 +66,7 @@ CAST_OPERATION_NAME = 'torch.Tensor.type(dtype)'
 
 # Used in value search to convert primitive inputs (e.g., 3) into scalar tensors
 # (e.g., tf.constant(3)).
-CONSTANT_OPERATION_NAME = 'tf.constant(value)'
+CONSTANT_OPERATION_NAME = 'torch.tensor(data)'
 
 
 # A list of FunctionInfo namedtuples, each describing one function usable by a
@@ -95,15 +95,15 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.argmin(input, dim)', #(input, dim=None, keepdim=False)
                  filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
                  weight=48),
-    FunctionInfo(name='torch.argsort(input, dim=-1, descending=False)',
+    FunctionInfo(name='torch.argsort(input, dim)',# descending=False
                  filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
                  weight=40),
     FunctionInfo(name=("torch.argsort(input)"),
-                 filter_group=FilterGroup.NUMERICTENSOR_AXIS_2,
+                 filter_group=FilterGroup.NUMERICTENSOR_AXIS_3,
                  weight=48),
-    FunctionInfo(name='torch.masked_fill(mask, value)',
-                 filter_group=FilterGroup.TENSOR_BOOLTENSOR_2,
-                 weight=28),
+    #FunctionInfo(name='torch.masked_fill(mask, value)',
+     #            filter_group=FilterGroup.TENSOR_BOOLTENSOR_2,
+      #           weight=28),
     FunctionInfo(name='torch.broadcast_to(input, shape)',
                  filter_group=FilterGroup.BROADCAST_TO_2,
                  weight=44),
@@ -116,9 +116,9 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.cat(tensors, dim)',
                  filter_group=FilterGroup.TENSORSEQUENCE_AXIS_2,
                  weight=36),
-    #FunctionInfo(name=CONSTANT_OPERATION_NAME,  # 'tf.constant(value)'.      #cannot find equivalent
-    #             filter_group=FilterGroup.NOT_TENSOR_1,
-    #             weight=23),  # Less weight than cast, accounting for the dtype.
+    FunctionInfo(name=CONSTANT_OPERATION_NAME,  # 'torch.tensor(value)'.      #cannot find equivalent
+                 filter_group=FilterGroup.NOT_TENSOR_1,
+                 weight=23),  # Less weight than cast, accounting for the dtype.
     #FunctionInfo(name='tf.constant(value, dtype)',
     #             filter_group=FilterGroup.CASTABLE_DTYPE_2,
     #             weight=24),
@@ -131,7 +131,7 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.exp(input)',
                  filter_group=FilterGroup.FLOATTENSOR_1,
                  weight=52),
-    FunctionInfo(name='torch.expand(sizes)',
+    FunctionInfo(name='torch.unsqueeze(input, dim)',
                  filter_group=FilterGroup.EXPAND_DIMS_2,
                  weight=18),
     FunctionInfo(name='torch.eye(n)',
@@ -143,9 +143,9 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.eye(n, dtype)',
                  filter_group=FilterGroup.EYE_ROWS_DTYPE_2,
                  weight=48),
-    FunctionInfo(name='torch.new_full(size, fill)',   #.tensor? (obj) ^^^check if it should have torch. at the front
-                 filter_group=FilterGroup.SHAPE_PRIMITIVE_2,
-                 weight=40),
+    #FunctionInfo(name='torch.Tensor.new_full(size, fill)',   #.tensor? (obj) ^^^check if it should have torch. at the front
+     #            filter_group=FilterGroup.SHAPE_PRIMITIVE_2,
+      #           weight=40),
     FunctionInfo(name='torch.gather(input, dim, index)',
                  filter_group=FilterGroup.GATHER_2,
                  weight=24),
@@ -161,7 +161,7 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.gt(input, other)',
                  filter_group=FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2,
                  weight=24),
-    FunctionInfo(name='torch.ge(x, y)',
+    FunctionInfo(name='torch.ge(input, other)',
                  filter_group=FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2,
                  weight=32),
     FunctionInfo(name='torch.bincount(input)',
@@ -256,7 +256,7 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.ne(input, other)',
                  filter_group=FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2,
                  weight=44),
-    FunctionInfo(name='torch.nn.functional.one_hot(tensor)', # doesn't seem the same as tf's
+    FunctionInfo(name='torch.nn.functional.one_hot(tensor, num_classes)', # doesn't seem the same as tf's
                  filter_group=FilterGroup.ONE_HOT_2,
                  weight=28),
     FunctionInfo(name='torch.ones(size)',
@@ -370,7 +370,7 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.stack(tensors, dim)',
                  filter_group=FilterGroup.TENSORSEQUENCE_AXIS_2,
                  weight=36),
-    FunctionInfo(name='torch.sub(x, y)',
+    FunctionInfo(name='torch.sub(input, other)',
                  filter_group=FilterGroup.SAME_DTYPE_NUMERIC_BROADCASTABLE_2,
                  weight=28),
    # FunctionInfo(name='torch.scatter_add(dim. index, src)',    # actually not this
@@ -382,7 +382,7 @@ PY_FUNCTIONS = [
     FunctionInfo(name='torch.tile(input, reps)',
                  filter_group=FilterGroup.TILE_2,
                  weight=28),
-    FunctionInfo(name='torch.transpose(input, dim0, dim1)', # 2 extra params
+    FunctionInfo(name='torch.transpose(input)', # 2 extra params
                  filter_group=FilterGroup.TENSOR_1,
                  weight=24),
     #FunctionInfo(name='tf.transpose(a, perm)', # should be handled by above
@@ -407,7 +407,7 @@ PY_FUNCTIONS = [
                  filter_group=FilterGroup.TENSOR_1,
                  weight=32),
 ]
-
+SPARSE_FUNCTIONS = []
 # Operations for manipulating SparseTensors.
 # SPARSE_FUNCTIONS = [
 #     FunctionInfo(name='tf.SparseTensor(indices, values, dense_shape)',
