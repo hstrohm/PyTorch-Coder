@@ -17,7 +17,7 @@
 
 import re
 
-import funcsigs
+#import funcsigs
 import tensorflow as tf
 from tf_coder import tensor_limits as limits
 from tf_coder import tf_coder_utils

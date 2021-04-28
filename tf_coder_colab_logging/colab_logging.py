@@ -28,10 +28,10 @@ try:
 except ImportError as e:
   print('Warning: colab_logging is not being loaded in an IPython environment. '
         'No logging will happen.')
-  # Use a mock for testing purposes.
-  import mock  # pylint: disable=g-import-not-at-top
-  IPython = mock.MagicMock()  # pylint: disable=invalid-name
-  _IPYTHON_MOCK = IPython
+# Use a mock for testing purposes.
+import mock  # pylint: disable=g-import-not-at-top
+IPython = mock.MagicMock()  # pylint: disable=invalid-name
+_IPYTHON_MOCK = IPython
 
 
 def get_uuid():
