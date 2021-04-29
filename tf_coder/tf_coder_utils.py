@@ -94,7 +94,7 @@ def convert_to_tensor(tensor_like):
 
 def num_tensor_elements(tensor):
   """Returns the number of elements in a tensor as an int (primitive)."""
-  return int(torch.numel(tensor))
+  return int(torch.numel(torch.tensor(tensor)))
 
 
 def max_tensor_value(tensor):
@@ -159,7 +159,7 @@ def object_to_string(obj, decimals=5): #limits.NUM_DECIMALS
   obj_type = type(obj)
 
   # Primitives and TensorFlow dtypes are handled the same way (with repr()).
-  if obj_type in (int, float, bool, str, torch.DType):
+  if obj_type in (int, float, bool, str, torch.dtype):
     if obj_type == float:
       # Floats must be rounded.
       obj = round(obj, decimals)
