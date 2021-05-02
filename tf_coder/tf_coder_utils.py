@@ -92,19 +92,37 @@ def convert_to_tensor(tensor_like):
   return torch.tensor(tensor_like)
 
 
+# rewrote
 def num_tensor_elements(tensor):
   """Returns the number of elements in a tensor as an int (primitive)."""
-  return int(torch.numel(torch.tensor(tensor)))
+  try: 
+    print('*******', tensor)
+    print(int(torch.numel(tensor)))
+    return int(torch.numel(tensor))
+  except:
+    r = 1
+    print('hi')
+    for x in tensor:
+        try:
+            r *= x[1]
+        except:
+            r *= x
+        
+  return r
 
 
 def max_tensor_value(tensor):
   """Returns the maximum value in a tensor, as a float (primitive)."""
-  return float(tensor.max(tensor.Tensor.type(torch.float32)))
+  #return float(tensor.max(tensor.Tensor.type(torch.float32))) # old
+  if type(tensor) is int: return tensor
+  return float(torch.max(tensor))
 
 
 def min_tensor_value(tensor):
   """Returns the minimum value in a tensor, as a float (primitive)."""
-  return float(tensor.min(tensor.Tensor.type(torch.float32)))
+  #return float(tensor.min(tensor.Tensor.type(torch.float32))) # old
+  if type(tensor) is int: return tensor
+  return float(torch.min(tensor))
 
 
 def tensor_to_string(tensor, decimals=5): #limits.NUM_DECIMALS

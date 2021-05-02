@@ -54,7 +54,7 @@ class FunctionOperation(operation_base.Operation):
       print('Warning: could not get docstring for function {}'.format(
           function_name))
       docstring = ''
-    print(arg_names)
+    
     # Make sure the function and argument names appear in the docstring. (Args
     # should already appear in the docstring "Args" section though.)
     docstring += '\n' + function_info.name
@@ -84,7 +84,7 @@ class FunctionOperation(operation_base.Operation):
         found_args = False
         found_keyword = False
         for i, line in enumerate(self._function_obj.__doc__.split('\n')):
-            if 'Args:' in line or 'Arguments:' in line:
+            if 'Args:' in line or 'Arguments' in line:
                 found_args = True
             if 'Keyword arguments:' in line:
                 found_keyword = True

@@ -152,8 +152,8 @@ class Value(object):
       # shapes or dtypes).
       if not self.elem_type_is_tensor and not self.elem_type_is_sparse_tensor:
         try:
-          as_tensor = tf.constant(self.value)
-          self.sequence_shape = as_tensor.shape.as_list()
+          as_tensor = torch.tensor(self.value)
+          self.sequence_shape = list(as_tensor.shape)
           self.sequence_dtype = as_tensor.dtype
         except (ValueError, TypeError):
           raise ValueError('Sequence is not tensor-like.')

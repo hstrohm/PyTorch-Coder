@@ -190,12 +190,12 @@ class Operation(object):
         break
 
       # Skipping filtering is only used for experiments in the PLDI paper.
-      if not (settings.paper_experiments.skip_filtering and
-              self.name not in tf_functions.REQUIRES_FILTERING):
+      #if not (settings.paper_experiments.skip_filtering and
+       #       self.name not in tf_functions.REQUIRES_FILTERING):
         # _apply_filter is either None or callable.
-        if (self._apply_filter is not None and
-            not self._apply_filter(arg_values)):  # pylint: disable=not-callable
-          continue
+        #if (self._apply_filter is not None and
+         #   not self._apply_filter(arg_values)):  # pylint: disable=not-callable
+          #continue
 
       if settings.printing.all_apply:
         print('Applying {} on arguments: {}'.format(
@@ -274,7 +274,7 @@ class Operation(object):
               for arg, weight_minus_1 in enumerate(partition)
           ]  # type: ArgOptionsType
         arg_options_list.append(arg_options)
-
+      
       for arg_options in arg_options_list:
         results.extend(self._enumerate_values(arg_options, end_time, settings,
                                               statistics))
